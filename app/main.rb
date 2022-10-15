@@ -23,7 +23,7 @@ def init(args)
 end
 
 def main_menu(args)
-	args.outputs.primitives << args.state.competitors
+	#args.outputs.primitives << args.state.competitors
 end
 
 def fight(args)
@@ -40,24 +40,21 @@ def open_image_folder(args)
 	$gtk.open_game_dir
 end
 
+## FIXME
+# Change image loading routine to load one image per tick to prevent hang
+
 def load_images(args)
 	total_images = args.state.settings.tournament_size
 	competitors = args.state.competitors
 	competitors.clear
-	competitor = 0
 	total_images.times do |competitor|
-		item_number = competitor + 1
-		this_item = {path: "sprites/%02d.png" % item_number, primitive_marker: :sprite}
+		this_item = {path: "sprites/%02d.png" % (competitor + 1), primitive_marker: :sprite}
 		this_item[:w], this_item[:h] = $gtk.calcspritebox(this_item[:path])
 		competitors << this_item
 	end
 end
 
-def load_one_image(path, args)
-	
-end
-
-# figure out their sizes, and scale them to fit
+# and scale them to fit
 
 # buttons
 
