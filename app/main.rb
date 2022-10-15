@@ -23,7 +23,7 @@ def init(args)
 end
 
 def main_menu(args)
-	args.outputs.primitives << $gtk.args.state.competitors
+	args.outputs.primitives << args.state.competitors
 end
 
 def fight(args)
@@ -45,12 +45,10 @@ def load_images(args)
 	competitors = args.state.competitors
 	competitors.clear
 	competitor = 0
-	total_images.times do
+	total_images.times do #|competitor|
 		item_number = competitor + 1
-		this_item = {path: "sprites/%02d.png" % item_number, primitive_flag: :sprite}
-		size = $gtk.calcspritebox(this_item[:path])
-		this_item[:w] = size[0]
-		this_item[:h] = size[1]
+		this_item = {path: "sprites/%02d.png" % item_number, primitive_marker: :sprite}
+		this_item[:w], this_item[:h] = $gtk.calcspritebox(this_item[:path])
 		competitors << this_item
 		competitor += 1
 	end
