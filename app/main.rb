@@ -45,12 +45,11 @@ def load_images(args)
 	competitors = args.state.competitors
 	competitors.clear
 	competitor = 0
-	total_images.times do #|competitor|
+	total_images.times do |competitor|
 		item_number = competitor + 1
 		this_item = {path: "sprites/%02d.png" % item_number, primitive_marker: :sprite}
 		this_item[:w], this_item[:h] = $gtk.calcspritebox(this_item[:path])
 		competitors << this_item
-		competitor += 1
 	end
 end
 
