@@ -11,10 +11,11 @@ end
 
 def init(args)
 	# get some defaults going
-	
 	args.state.settings.max_size_x = 500
 	args.state.settings.max_size_y = 500
 	
+	args.state.settings.tournament_size = 64
+	args.state.competitors = []
 	
 	
 	
@@ -22,11 +23,11 @@ def init(args)
 end
 
 def main_menu(args)
-	
+	args.outputs.primitives << $gtk.args.state.competitors
 end
 
 def fight(args)
-	args.outputs.labels << {x: 1280/2, y: 720/2, text: "VS", alignment_enum: 1, vertical_alignment_enum: 1}
+	args.outputs.labels << {x: 1280/2, y: 720/2, text: "VS", alignment_enum: 1, vertical_alignment_enum: 1, size_enum: 3}
 
 end
 
@@ -40,7 +41,23 @@ def open_image_folder(args)
 end
 
 def load_images(args)
+	total_images = args.state.settings.tournament_size
+	competitors = args.state.competitors
+	competitors.clear
+	competitor = 0
+	total_images.times do
+		item_number = competitor + 1
+		this_item = {path: "sprites/%02d.png" % item_number, primitive_flag: :sprite}
+		size = $gtk.calcspritebox(this_item[:path])
+		this_item[:w] = size[0]
+		this_item[:h] = size[1]
+		competitors << this_item
+		competitor += 1
+	end
+end
 
+def load_one_image(path, args)
+	
 end
 
 # figure out their sizes, and scale them to fit
