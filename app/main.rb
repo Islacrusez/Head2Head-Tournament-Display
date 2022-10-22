@@ -3,6 +3,7 @@ def tick(args)
 	case args.state.game_state
 		when :menu then main_menu(args)
 		when :settings then 
+		when :loading_images then load_images(args)
 		when :fight	then fight(args)
 		when :interlude	then 
 		else raise "Invalid Game State! Fatal!"
@@ -16,6 +17,7 @@ def init(args)
 	
 	args.state.settings.tournament_size = 64
 	args.state.competitors = []
+	args.state.competitors_loaded = false
 	
 	
 	
@@ -23,7 +25,7 @@ def init(args)
 end
 
 def main_menu(args)
-	#args.outputs.primitives << args.state.competitors
+	args.outputs.primitives << args.state.competitors
 end
 
 def fight(args)
@@ -40,18 +42,29 @@ def open_image_folder(args)
 	$gtk.open_game_dir
 end
 
-## FIXME
-# Change image loading routine to load one image per tick to prevent hang
+def start_loading_images(args)
+	args.state.competitors.clear
+	args.state.competitors_loaded = false
+	args.state.competitors_to_load = args.state.settings.tournament_size
+
+	args.state.game_state = :loading_images
+end
 
 def load_images(args)
-	total_images = args.state.settings.tournament_size
+	image = args.state.settings.tournament_size - args.state.competitors_to_load
+	load_one_image(image, args)
+	args.state.competitors_to_load -= 1
+	args.state.competitors_to_load == 0 ? args.state.competitors_loaded = true : #no-op
+
+	return unless args.state.competitors_loaded
+	args.state.game_state = :menu
+end
+
+def load_one_image(image_num, args)
 	competitors = args.state.competitors
-	competitors.clear
-	total_images.times do |competitor|
-		this_item = {path: "sprites/%02d.png" % (competitor + 1), primitive_marker: :sprite}
-		this_item[:w], this_item[:h] = $gtk.calcspritebox(this_item[:path])
-		competitors << this_item
-	end
+	this_item = {path: "sprites/%02d.png" % (image_num + 1), primitive_marker: :sprite}
+	this_item[:w], this_item[:h] = $gtk.calcspritebox(this_item[:path])
+	competitors << this_item
 end
 
 # and scale them to fit
