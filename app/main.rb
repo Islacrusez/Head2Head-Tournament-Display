@@ -55,7 +55,9 @@ def load_images(args)
 	load_one_image(image, args)
 	args.state.competitors_to_load -= 1
 	args.state.competitors_loaded = true if args.state.competitors_to_load == 0
-
+	load_percent = image / args.state.settings.tournament_size * 100
+	args.outputs.labels << {x: 1280/2, y: 720/2, text: "%i%" % load_percent, alignment_enum: 1, vertical_alignment_enum: 1, size_enum: 3}
+	
 	return unless args.state.competitors_loaded
 	args.state.game_state = :menu
 end
