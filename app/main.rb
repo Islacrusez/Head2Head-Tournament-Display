@@ -54,7 +54,7 @@ def load_images(args)
 	image = args.state.settings.tournament_size - args.state.competitors_to_load
 	load_one_image(image, args)
 	args.state.competitors_to_load -= 1
-	args.state.competitors_to_load == 0 ? args.state.competitors_loaded = true : #no-op
+	args.state.competitors_loaded = true if args.state.competitors_to_load == 0
 
 	return unless args.state.competitors_loaded
 	args.state.game_state = :menu
