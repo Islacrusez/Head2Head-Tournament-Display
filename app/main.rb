@@ -71,6 +71,56 @@ end
 
 # and scale them to fit
 
+def aspect_check(image)
+	if image[:w] == image[:h]
+		return :square
+	elsif image[:w] > image[:h]
+		return :wide
+	else
+		return :tall
+	end
+end
+
+def get_aspect(image, args)
+	
+end
+
+def resize_to_fight(args)
+	size = 0
+	if args.state.settings.max_size_x == args.state.settings.max_size_y
+		size = args.state.settings.max_size_x
+	elsif args.state.settings.max_size_x > args.state.settings.max_size_y
+		size = args.state.settings.max_size_y
+	else
+		size = args.state.settings.max_size_x
+	end
+	
+	args.state.competitors.each do |image|
+		case aspect_check(image)
+			when :square then resize_square(image, size)
+			when :wide then resize_wide(image, size)
+			when :tall then resize_tall(image, size)
+			else raise "Aspect Check Failed, Fatal."
+		end
+	end
+end
+
+def resize_square(image, size)
+	image[:w], image[:h] = size, size
+end
+
+def resize_wide(image, size)
+	ratio = image[:h] / image[:w]
+	image[:w] = size
+	image[:h] = size * ratio
+end
+
+def resize_tall(image, size)
+	ratio = image[:w] / image[:h]
+	image[:h] = size
+	image[:w] = size * ratio
+end
+
 # buttons
 
 # tournament format
