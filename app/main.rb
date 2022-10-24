@@ -14,6 +14,7 @@ def init(args)
 	# get some defaults going
 	args.state.settings.max_size_x = 500
 	args.state.settings.max_size_y = 500
+	args.state.settings.max_size_aspect = get_aspect({w: args.state.settings.max_size_x, h: args.state.settings.max_size_y = 500})
 	
 	args.state.settings.tournament_size = 64
 	args.state.competitors = []
@@ -66,23 +67,24 @@ def load_one_image(image_num, args)
 	competitors = args.state.competitors
 	this_item = {path: "sprites/%02d.png" % (image_num + 1), primitive_marker: :sprite}
 	this_item[:w], this_item[:h] = $gtk.calcspritebox(this_item[:path])
+	this_item[:aspect] = get_aspect(this_item)
 	competitors << this_item
 end
 
 # and scale them to fit
 
-def aspect_check(image)
+def aspect_check(image, canvas_aspect)
 	if image[:w] == image[:h]
 		return :square
-	elsif image[:w] > image[:h]
+	elsif image[:aspect] < canvas_aspect
 		return :wide
 	else
 		return :tall
 	end
 end
 
-def get_aspect(image, args)
-	
+def get_aspect(image)
+	image[:h] / image[:w]
 end
 
 def resize_to_fight(args)
@@ -96,7 +98,7 @@ def resize_to_fight(args)
 	end
 	
 	args.state.competitors.each do |image|
-		case aspect_check(image)
+		case aspect_check(image, args.state.settings.max_size_aspect)
 			when :square then resize_square(image, size)
 			when :wide then resize_wide(image, size)
 			when :tall then resize_tall(image, size)
