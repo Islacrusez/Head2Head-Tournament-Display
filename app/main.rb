@@ -5,7 +5,7 @@ def tick(args)
 		when :settings then 
 		when :loading_images then load_images(args)
 		when :fight	then fight(args)
-		when :interlude	then 
+		when :interlude	then interlude(args)
 		else raise "Invalid Game State! Fatal!"
 	end
 end
@@ -19,8 +19,8 @@ def init(args)
 	args.state.settings.tournament_size = 64
 	args.state.competitors = []
 	args.state.competitors_loaded = false
-	
-	
+	args.state.upcoming_fights = []
+	args.state.this_round = []
 	
 	args.state.game_state = :menu
 end
@@ -30,8 +30,22 @@ def main_menu(args)
 end
 
 def fight(args)
+	if args.state.upcoming_fights.length == 0
+		args.state.game_state = :interlude
+		return
+	end
 	args.outputs.labels << {x: 1280/2, y: 720/2, text: "VS", alignment_enum: 1, vertical_alignment_enum: 1, size_enum: 3}
+	
+end
 
+def eliminate(loser, args)
+	args.state.this_round[loser][:eliminated] = true
+	args.state.this_round = args.state.upcoming_fights.shift
+end
+
+def interlude(args)
+	pair_off(args.state.competitors, args.state.upcoming_fights)
+	args.state.game_state = :fight
 end
 
 # load images
@@ -68,6 +82,7 @@ def load_one_image(image_num, args)
 	this_item = {path: "sprites/%02d.png" % (image_num + 1), primitive_marker: :sprite}
 	this_item[:w], this_item[:h] = $gtk.calcspritebox(this_item[:path])
 	this_item[:aspect] = get_aspect(this_item)
+	this_item[:eliminated] = false
 	competitors << this_item
 end
 
@@ -126,5 +141,18 @@ end
 # buttons
 
 # tournament format
+
+def pair_off(source, destination)
+	unless source.length.even?
+		raise "Invalid number of competitors. Odd numbers not currently supported"
+		#FIXME
+	end
+	list = source.reject{|item| item[:eliminated]}
+	puts list
+	total_pairs = source.length.idiv(2)
+	total_pairs.times do
+		destination << [list.shift, list.shift]
+	end
+end
 
 # settings
