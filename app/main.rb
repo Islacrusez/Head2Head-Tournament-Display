@@ -16,6 +16,14 @@ def init(args)
 	args.state.settings.max_size_y = 500
 	args.state.settings.max_size_aspect = get_aspect({w: args.state.settings.max_size_x, h: args.state.settings.max_size_y = 500})
 	
+	args.state.settings.pos = []
+	args.state.settings.pos[0] = {}
+	args.state.settings.pos[1] = {}
+	args.state.settings.pos[0][:x] = 1280/4 - args.state.settings.max_size_x / 2
+	args.state.settings.pos[0][:y] = (720 - args.state.settings.max_size_y) / 2
+	args.state.settings.pos[1][:x] = 1280/4 * 3 - args.state.settings.max_size_x / 2
+	args.state.settings.pos[1][:y] = (720 - args.state.settings.max_size_y) / 2
+	
 	args.state.settings.tournament_size = 64
 	args.state.competitors = []
 	args.state.competitors_loaded = false
@@ -35,12 +43,23 @@ def fight(args)
 		return
 	end
 	args.outputs.labels << {x: 1280/2, y: 720/2, text: "VS", alignment_enum: 1, vertical_alignment_enum: 1, size_enum: 3}
-	
+	if args.state.this_round.length == 0
+		prep_fight(args)
+	end
+	args.outputs.sprites << args.state.this_round
 end
 
 def eliminate(loser, args)
 	args.state.this_round[loser][:eliminated] = true
+	args.state.this_round.clear
+end
+
+def prep_fight(args)
 	args.state.this_round = args.state.upcoming_fights.shift
+	args.state.this_round[0][:x] = args.state.settings.pos[0][:x]
+	args.state.this_round[0][:y] = args.state.settings.pos[0][:y]
+	args.state.this_round[1][:x] = args.state.settings.pos[1][:x]
+	args.state.this_round[1][:y] = args.state.settings.pos[1][:y]
 end
 
 def interlude(args)
