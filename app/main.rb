@@ -19,10 +19,10 @@ def init(args)
 	args.state.settings.pos = []
 	args.state.settings.pos[0] = {}
 	args.state.settings.pos[1] = {}
-	args.state.settings.pos[0][:x] = 1280/4 - args.state.settings.max_size_x / 2
-	args.state.settings.pos[0][:y] = (720 - args.state.settings.max_size_y) / 2
-	args.state.settings.pos[1][:x] = 1280/4 * 3 - args.state.settings.max_size_x / 2
-	args.state.settings.pos[1][:y] = (720 - args.state.settings.max_size_y) / 2
+	args.state.settings.pos[0][:x] = args.grid.right / 4 - args.state.settings.max_size_x / 2
+	args.state.settings.pos[0][:y] = (args.grid.top - args.state.settings.max_size_y) / 2
+	args.state.settings.pos[1][:x] = args.grid.right / 4 * 3 - args.state.settings.max_size_x / 2
+	args.state.settings.pos[1][:y] = (args.grid.top - args.state.settings.max_size_y) / 2
 	
 	args.state.settings.tournament_size = 64
 	args.state.competitors = []
@@ -42,7 +42,7 @@ def fight(args)
 		args.state.game_state = :interlude
 		return
 	end
-	args.outputs.labels << {x: 1280/2, y: 720/2, text: "VS", alignment_enum: 1, vertical_alignment_enum: 1, size_enum: 3}
+	args.outputs.labels << {x: args.grid.right / 2, y: args.grid.top / 2, text: "VS", alignment_enum: 1, vertical_alignment_enum: 1, size_enum: 3}
 	if args.state.this_round.length == 0
 		prep_fight(args)
 	end
@@ -90,7 +90,7 @@ def load_images(args)
 	args.state.competitors_to_load -= 1
 	args.state.competitors_loaded = true if args.state.competitors_to_load == 0
 	load_percent = image / args.state.settings.tournament_size * 100
-	args.outputs.labels << {x: 1280/2, y: 720/2, text: "%i%" % load_percent, alignment_enum: 1, vertical_alignment_enum: 1, size_enum: 3}
+	args.outputs.labels << {x: args.grid.right / 2, y: args.grid.top / 2, text: "%i%" % load_percent, alignment_enum: 1, vertical_alignment_enum: 1, size_enum: 3}
 	
 	return unless args.state.competitors_loaded
 	args.state.game_state = :menu
