@@ -47,6 +47,10 @@ def fight(args)
 		prep_fight(args)
 	end
 	args.outputs.sprites << args.state.this_round
+	
+	if args.inputs.mouse.click
+		clicked_comptetitor(args.inputs.mouse.x, args.inputs.mouse.y, args.state.this_round, args)
+	end
 end
 
 def eliminate(loser, args)
@@ -158,6 +162,17 @@ def resize_tall(image, size)
 end
 
 # buttons
+
+def clicked_comptetitor(x, y, buttons, args)
+	buttons.each do |button|
+		if [x, y].inside_rect?(buttons[0])
+			eliminate(0, args)
+		elsif [x, y].inside_rect?(buttons[1])
+			eliminate(1, args)
+		else raise "Competitor-clicking has gone horribly wrong"
+		end
+	end
+end
 
 # tournament format
 
