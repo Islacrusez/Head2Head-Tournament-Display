@@ -16,12 +16,14 @@ def init(args)
 	args.state.settings.max_size_y = 500
 	args.state.settings.max_size_aspect = get_aspect({w: args.state.settings.max_size_x, h: args.state.settings.max_size_y = 500})
 	
+	args.state.settings.offset = (args.grid.right / 2 - args.state.settings.max_size_x) / 2
+	
 	args.state.settings.pos = []
 	args.state.settings.pos[0] = {}
 	args.state.settings.pos[1] = {}
-	args.state.settings.pos[0][:x] = args.grid.right / 4 - args.state.settings.max_size_x / 2
+	args.state.settings.pos[0][:x] = args.grid.right / 2 - args.state.settings.offset
 	args.state.settings.pos[0][:y] = (args.grid.top - args.state.settings.max_size_y) / 2
-	args.state.settings.pos[1][:x] = args.grid.right / 4 * 3 - args.state.settings.max_size_x / 2
+	args.state.settings.pos[1][:x] = args.grid.right / 2 + args.state.settings.offset
 	args.state.settings.pos[1][:y] = (args.grid.top - args.state.settings.max_size_y) / 2
 	
 	args.state.settings.tournament_size = 64
@@ -60,10 +62,10 @@ end
 
 def prep_fight(args)
 	args.state.this_round = args.state.upcoming_fights.shift
-	args.state.this_round[0][:x] = args.state.settings.pos[0][:x]
-	args.state.this_round[0][:y] = args.state.settings.pos[0][:y]
+	args.state.this_round[0][:x] = args.state.settings.pos[0][:x] - args.state.this_round[0][:w]
+	args.state.this_round[0][:y] = args.state.settings.pos[0][:y] + (args.state.settings.max_size_y - args.state.this_round[0][:h]) / 2
 	args.state.this_round[1][:x] = args.state.settings.pos[1][:x]
-	args.state.this_round[1][:y] = args.state.settings.pos[1][:y]
+	args.state.this_round[1][:y] = args.state.settings.pos[1][:y] + (args.state.settings.max_size_y - args.state.this_round[1][:h]) / 2
 end
 
 def interlude(args)
@@ -169,7 +171,7 @@ def clicked_comptetitor(x, y, buttons, args)
 			eliminate(0, args)
 		elsif [x, y].inside_rect?(buttons[1])
 			eliminate(1, args)
-		else raise "Competitor-clicking has gone horribly wrong"
+		else
 		end
 	end
 end
