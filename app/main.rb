@@ -40,12 +40,12 @@ def main_menu(args)
 end
 
 def fight(args)
-	if args.state.upcoming_fights.length == 0
+	if args.state.upcoming_fights.empty? && args.state.this_round.empty?
 		args.state.game_state = :interlude
 		return
 	end
 	args.outputs.labels << {x: args.grid.right / 2, y: args.grid.top / 2, text: "VS", alignment_enum: 1, vertical_alignment_enum: 1, size_enum: 3}
-	if args.state.this_round.length == 0
+	if args.state.this_round.empty?
 		prep_fight(args)
 	end
 	args.outputs.sprites << args.state.this_round
@@ -69,7 +69,7 @@ def prep_fight(args)
 end
 
 def interlude(args)
-	pair_off(args.state.competitors, args.state.upcoming_fights)
+	pair_off(args.state.competitors.reject{|competitor| competitor[:eliminated]}, args.state.upcoming_fights)
 	args.state.game_state = :fight
 end
 
