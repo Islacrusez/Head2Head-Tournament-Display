@@ -6,6 +6,8 @@ def tick(args)
 		when :loading_images then load_images(args)
 		when :fight	then fight(args)
 		when :interlude	then interlude(args)
+		when :victor then declare_winner(args)
+		when :final_eight then final_eight(args)
 		else raise "Invalid Game State! Fatal!"
 	end
 end
@@ -33,6 +35,15 @@ def init(args)
 	args.state.this_round = []
 	
 	args.state.game_state = :menu
+end
+
+def load(args = $gtk.args)
+	start_loading_images(args)
+end
+
+def start(args = $gtk.args)
+	resize_to_fight(args)
+	args.state.game_state = :fight
 end
 
 def main_menu(args)
@@ -69,7 +80,21 @@ def prep_fight(args)
 end
 
 def interlude(args)
-	pair_off(args.state.competitors.reject{|competitor| competitor[:eliminated]}, args.state.upcoming_fights)
+	pool = args.state.competitors.reject{|competitor| competitor[:eliminated]}
+	case pool.length
+		when 16
+			pair_off(pool, args.state.upcoming_fights)	
+		when 8
+			pool.shuffle!
+			pair_off(pool, args.state.upcoming_fights)	
+			args.state.game_state = :final_eight
+		when 1
+			args.state.game_state = :victor
+		else
+			pair_off(pool, args.state.upcoming_fights)
+	end
+	#pair_off(pool, args.state.upcoming_fights)	
+	return unless args.state.game_state == :interlude
 	args.state.game_state = :fight
 end
 
@@ -191,4 +216,22 @@ def pair_off(source, destination)
 	end
 end
 
+def declare_winner(args)
+	unless args.state.winner
+		args.state.winner = args.state.competitors.reject{|competitor| competitor[:eliminated]}[0]
+		if args.state.competitors.reject{|competitor| competitor[:eliminated]}.length > 1
+			raise "Logic failure, winner declared with competitors in play"
+		elsif args.state.competitors.reject{|competitor| competitor[:eliminated]}.length < 1
+			raise "Logic failure, winner declared but all competitors elimintated"
+		else
+			args.state.winner[:x] = args.grid.center_x - args.state.winner[:w] / 2 
+		end
+	end
+	args.outputs.sprites << args.state.winner
+end
+
+def final_eight(args)
+	$gtk.notify!("Final Eight!")
+	args.state.game_state = :fight
+end
 # settings
