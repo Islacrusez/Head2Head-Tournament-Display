@@ -8,6 +8,8 @@ def tick(args)
 		when :interlude	then interlude(args)
 		when :victor then declare_winner(args)
 		when :final_eight then final_eight(args)
+		when :final_four then final_four(args)
+		when :final_two then final_two(args)
 		else raise "Invalid Game State! Fatal!"
 	end
 end
@@ -88,6 +90,14 @@ def interlude(args)
 			pool.shuffle!
 			pair_off(pool, args.state.upcoming_fights)	
 			args.state.game_state = :final_eight
+		when 4
+			pool.shuffle!
+			pair_off(pool, args.state.upcoming_fights)	
+			args.state.game_state = :final_four
+		when 2
+			pool.shuffle!
+			pair_off(pool, args.state.upcoming_fights)	
+			args.state.game_state = :final_two
 		when 1
 			args.state.game_state = :victor
 		else
@@ -232,6 +242,14 @@ end
 
 def final_eight(args)
 	$gtk.notify!("Final Eight!")
+	args.state.game_state = :fight
+end
+def final_four(args)
+	$gtk.notify!("Semi-finals!")
+	args.state.game_state = :fight
+end
+def final_two(args)
+	$gtk.notify!("Final showdown!")
 	args.state.game_state = :fight
 end
 # settings
